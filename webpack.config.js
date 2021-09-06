@@ -1,5 +1,11 @@
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+// const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const webpack = require('webpack')
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 const path = require('path')
+
 module.exports = {
+    mode: "production",
     entry: path.resolve(__dirname, './main.js'),
     output: {
         filename: 'build.js',
@@ -7,7 +13,21 @@ module.exports = {
     },
     devtool: 'source-map',
     devServer: {
-        contentBase: path.resolve(__dirname, './dist')
+        port: 8001,
+        hot: true,
+        contentBase: './dist'
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            title: '飞机大战'
+        }),
+        // new CleanWebpackPlugin(),
+        new webpack.HotModuleReplacementPlugin()
+    ],
+    optimization: {
+        minimizer: [
+            new UglifyJSPlugin({ sourceMap: true })
+        ]
     },
     module: {
         rules: [

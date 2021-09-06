@@ -6,25 +6,21 @@
  *   返回一个“虚拟节点”(VNode)
  */
 import { defineComponent, h, ref, computed } from '@vue/runtime-core'
-import StartPage from './pages/StartPage'
-import GamePage from './pages/GamePage'
-import EndPage from './pages/EndPage'
+import { PAGE, getPageComponent } from "./pages";
 
 export default defineComponent({
     setup() {
-        let currentPageName = ref('StartPage')
-        let currentPage = computed(() => {
-            if (currentPageName.value === 'GamePage') {
-                return GamePage
-            } else if (currentPageName.value === 'StartPage') {
-                return StartPage
-            } else if (currentPageName.value === 'EndPage') {
-                return EndPage
-            }
+        const currentPageName = ref(PAGE.start)
+        const currentPage = computed(() => {
+            return getPageComponent(currentPageName.value)
         })
+        const handleChangePage = (page) => {
+            currentPageName.value = page
+        }
+
         return {
-            currentPageName,
-            currentPage
+            currentPage,
+            handleChangePage
         }
     },
     render(ctx) {
@@ -32,9 +28,7 @@ export default defineComponent({
         // const vnode = h('rect', { x: 100, y: 100 }, '天生我材必有用')
         return h('Container', [
             h(ctx.currentPage, {
-                onChangePage(page) {
-                    ctx.currentPageName = page
-                }
+                onChangePage: ctx.handleChangePage
             })
         ])
     }

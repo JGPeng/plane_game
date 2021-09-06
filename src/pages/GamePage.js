@@ -7,6 +7,7 @@ import { game } from '../Game'
 import { hitTest, getRandomNumber } from '../utils'
 import { stage } from '../config'
 import { useKeyboardMove } from '../utils/useKeyboardMove'
+import { PAGE } from './index'
 
 // 记录子弹id
 let hashCode = 0
@@ -141,7 +142,7 @@ const useFighting = (planeInfo, enemyInfos, selfBullets, enemyBullets, emit) => 
                 // game.ticker.stop()
                 // game.ticker.destroy()
                 console.log('hit，游戏结束')
-                emit('changePage', 'EndPage')
+                emit('changePage', PAGE.end)
             }
         })
         // 我方子弹移动,子弹边界检测,子弹与敌方碰撞检测
@@ -173,7 +174,7 @@ const useFighting = (planeInfo, enemyInfos, selfBullets, enemyBullets, emit) => 
                 i--
             } else if (hitTest(planeInfo, enemyBullets[i])) {
                 // 接触我方飞机 - 结束游戏
-                emit('changePage', 'EndPage')
+                emit('changePage', PAGE.end)
             } else {
                 // 敌方子弹和我方子弹的碰撞检测
                 const index = selfBullets.findIndex((bullet) => hitTest(bullet, enemyBullets[i]))

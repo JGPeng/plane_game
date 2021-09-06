@@ -59,16 +59,15 @@ const useCreatePlane = ({ x, y, speed }) => {
 const useCreateEnemy = () => {
     const enemyInfos = reactive([])
     const createEnemy = () => {
-        enemyInfos.push(reactive({
-            x: getRandomNumber(0, 400 - 60),
-            y: getRandomNumber(-200, 0),
-            width: EnemyInfo.width,
-            height: EnemyInfo.height,
-            maxHeight: getRandomNumber(100, stage.height / 2),
-            xSpeed: getRandomNumber(1, 5),
-            ySpeed: getRandomNumber(1, 5),
-            life: EnemyInfo.life
-        }))
+        const x = getRandomNumber(0, stage.width - EnemyInfo.width)
+        const y = getRandomNumber(-200, 0)
+        const width = EnemyInfo.width
+        const height = EnemyInfo.height
+        const maxHeight = getRandomNumber(20, stage.height / 2)
+        const xSpeed = getRandomNumber(1, 5)
+        const ySpeed = getRandomNumber(1, 3)
+        const life = EnemyInfo.life
+        enemyInfos.push(reactive({ x, y, width, height, maxHeight, xSpeed, ySpeed, life }))
     }
     createEnemy()
     setInterval(createEnemy, 1000)
@@ -128,7 +127,7 @@ const useFighting = (planeInfo, enemyInfos, selfBullets, enemyBullets, emit) => 
     const handleTicker = () => {
         // 移动敌方、碰撞检测
         enemyInfos.forEach((enemyInfo) => {
-            // 敌方位移
+            // 敌方位移：先判断运动放心，再进行碰撞检测，可避免边界抖动（卡边界）
             if (enemyInfo.x >= stage.width - enemyInfo.width || enemyInfo.x <= 0) {
                 enemyInfo.xSpeed = -enemyInfo.xSpeed
             }

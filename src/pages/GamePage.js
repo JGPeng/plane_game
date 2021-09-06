@@ -214,42 +214,6 @@ export default defineComponent({
         planeInfo.x = info.x
         planeInfo.y = info.y
 
-        // 飞机发射
-        /**
-         * 飞机发射子弹
-         *   @attack: 是否发射子弹
-         *   @ATTACK_INTERVAL: 攻击间隔
-         *   @count: 计数变量
-         */
-        let attack = false
-        const ATTACK_INTERVAL = 5
-        let count = 0
-        // 按下空格后开始发射子弹
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                attack = true
-                count = 100
-            }
-        })
-        // 释放空格则停止发射子弹
-        window.addEventListener('keyup', (e) => {
-            if (e.code === 'Space') {
-                attack = false
-            }
-        })
-        // 每累加到一定数添加一子弹
-        const handleTicker = () => {
-            if (attack) {
-                count++
-                if (count > ATTACK_INTERVAL) {
-                    createSelfBullet(planeInfo.x + planeInfo.width / 2 - 3, planeInfo.y)
-                    count = 0
-                }
-            }
-        }
-        // 定时器 - 检测是否发射子弹
-        game.ticker.add(handleTicker)
-
         // 飞机大战
         useFighting(planeInfo, enemyInfos, selfBullets, enemyBullets, emit)
 
@@ -258,10 +222,20 @@ export default defineComponent({
             enemyInfos,
             selfBullets,
             enemyBullets,
+            createSelfBullet,
             createEnemyBullet
         }
     },
     render(ctx) {
+        const createSelfPlane = () => {
+            return h(Plane, {
+                x: ctx.planeInfo.x,
+                y: ctx.planeInfo.y,
+                onAttack({ x, y }) {
+                    ctx.createSelfBullet(x, y)
+                }
+            })
+        }
         const createEnemys = () => {
             return ctx.enemyInfos.map((info) => {
                 return h(Enemy, {
@@ -285,7 +259,7 @@ export default defineComponent({
         }
         return h('Container', [
             h(Map),
-            h(Plane, { x: ctx.planeInfo.x, y: ctx.planeInfo.y }),
+            createSelfPlane(),
             ...createEnemys(),
             ...createSelfBullets(),
             ...createEnemyBullets(),

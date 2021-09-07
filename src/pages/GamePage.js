@@ -8,6 +8,7 @@ import { hitTest, getRandomNumber } from '../utils'
 import { stage } from '../config'
 import { useKeyboardMove } from '../utils/useKeyboardMove'
 import { PAGE } from './index'
+import TWEEN from "@tweenjs/tween.js";
 
 // 记录子弹id
 let hashCode = 0
@@ -23,6 +24,33 @@ const useCreatePlane = ({ x, y, speed }) => {
         speed,
         width: PlaneInfo.width,
         height: PlaneInfo.height
+    })
+
+    // 飞机移动
+    const info = useKeyboardMove({
+        x: planeInfo.x,
+        y: planeInfo.y,
+        speed: planeInfo.speed
+    })
+    planeInfo.x = info.x
+    planeInfo.y = info.y
+
+    // 缓动出场
+    const tween = new TWEEN.Tween({ x, y })
+        .to({ y: stage.height - planeInfo.height - 20 }, 500)
+        .start()
+    tween.onUpdate((obj) => {
+        planeInfo.x = obj.x
+        planeInfo.y = obj.y
+    })
+    const handleTicker = () => {
+        TWEEN.update()
+    }
+    onMounted(() => {
+        game.ticker.add(handleTicker)
+    })
+    onUnmounted(() => {
+        game.ticker.remove(handleTicker)
     })
 
     // 监听按键,触发飞机位移
@@ -199,19 +227,10 @@ const useFighting = (planeInfo, enemyInfos, selfBullets, enemyBullets, emit) => 
 
 export default defineComponent({
     setup(props, { emit }) {
-        const planeInfo = useCreatePlane({ x: (stage.width / 2 - PlaneInfo.width / 2), y: (stage.height - PlaneInfo.height), speed: 5 })
+        const planeInfo = useCreatePlane({ x: (stage.width / 2 - PlaneInfo.width / 2), y: (stage.height + PlaneInfo.height), speed: 5 })
         const enemyInfos = useCreateEnemy()
         const { selfBullets, createSelfBullet, destroySelfBullet } = useSelfBullet()
         const { enemyBullets, createEnemyBullet } = useEnemyBullet()
-
-        // 飞机移动
-        const info = useKeyboardMove({
-            x: planeInfo.x,
-            y: planeInfo.y,
-            speed: planeInfo.speed
-        })
-        planeInfo.x = info.x
-        planeInfo.y = info.y
 
         // 飞机大战
         useFighting(planeInfo, enemyInfos, selfBullets, enemyBullets, emit)

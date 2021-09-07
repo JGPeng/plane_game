@@ -1,7 +1,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 // const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const webpack = require('webpack')
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
+// const webpack = require('webpack')
+// const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 const path = require('path')
 
 module.exports = {
@@ -22,13 +22,13 @@ module.exports = {
             title: '飞机大战'
         }),
         // new CleanWebpackPlugin(),
-        new webpack.HotModuleReplacementPlugin()
+        // new webpack.HotModuleReplacementPlugin()
     ],
-    optimization: {
-        minimizer: [
-            new UglifyJSPlugin({ sourceMap: true })
-        ]
-    },
+    // optimization: {
+    //     minimizer: [
+    //         new UglifyJSPlugin({ sourceMap: true })
+    //     ]
+    // },
     module: {
         rules: [
             {
@@ -44,5 +44,9 @@ module.exports = {
                 ]
             }
         ]
+    },
+    // 解决文件资源过大的报错警告
+    performance: {
+        hints: false
     }
 }
